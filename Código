@@ -1,1 +1,79 @@
+# -- coding: utf-8 --
+"""
+Created on Mon Nov  8 19:22:40 2021
 
+Programa de gradiente descendente con funciones propias
+para el cálculo del producto de matrices y la transpuesta de matrices.
+
+Hecho por Aranza Moreno Sarabia y Diana Victoria Morales Tavera.
+"""
+import numpy as np
+
+A=[[4,-1,1],[-1,4,-2],[1,-2,4]]        
+b=[12,-1,5]      
+x=[0,0,0]
+p=0.001
+umbral=0.00001
+it_mx=5
+
+def transp(A):
+    t=[]        
+    for i in range (len(A)):
+        aux=[]
+        for j in range(len(A)):
+            aux.append(A[j][i])
+        t.append(aux)
+    return t    
+
+def resta(A,b):
+     r=[]
+     for i in range(len(A)):
+         if isinstance(A[0],list):
+             aux=[]
+             for j in range(len(A[0])):
+                 aux.append(A[i][j]+b[i][j])
+             r.append(aux)
+         else:
+             r.append(A[i]+b[i])
+     return r
+
+def mult_1(A,b):
+    r=[]
+    for i in range (len(A)):
+        for j in range (len(b)):
+            x=0
+            for k in range(len(A[0])):
+                x=x+A[i][k]*b[k]
+        r.append(x)  
+    return r
+
+def mult_2(A,n):
+    b_1=[]
+    for i in range (len(A)):
+        aux=[]
+        if isinstance(A[0],list):
+            for j in range (len(A[i])):
+                x=A[i][j]
+                aux.append(n*x)
+            b_1.append(aux)
+        else:
+            b_1.append(n*A[i])
+    return b_1
+
+def grad(x_sol,A,b,umbral,it_mx):
+    d_1=mult_1(transp(A),mult_1(A,x_sol))
+    d_2=mult_1(transp(A),b)
+    for i in range (it_mx):
+        x_sol=resta(x_sol,mult_2(resta(mult_2(d_1,2),mult_2(d_2,2)),p))
+        print(i,x_sol)
+        btent=mult_1(A,x_sol)
+        error= np.sum(np.abs(resta(btent,b)))
+        if error < umbral:
+            return x_sol
+        
+def printn(A):
+    for i in range (len(A)):
+        print(A[i])
+
+grad(x,A,b,umbral,it_mx)
+print("b=",mult_1(A,x))
